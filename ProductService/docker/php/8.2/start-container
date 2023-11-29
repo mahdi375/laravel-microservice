@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+echo "Installing Package Dependencies"
+composer install
+
+echo "Running database migrations"
+php artisan migrate
+
+echo "Creating Storage Link"
+STORAGE_LINK=/var/www/html/public/storage
+STORAGE=/var/www/html/storage/app/public/
+if [ ! -L "$STORAGE_LINK" ]; then
+    ln -s "$STORAGE" "$STORAGE_LINK"
+    echo "---- Storage Symbolic Successfully Created"
+else
+    echo "---- Storage Symbolic Already Exists"
+fi
+
+if [ $# -gt 0 ]; then
+    exec gosu $WWWUSER "$@"
+else
+    /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+fi

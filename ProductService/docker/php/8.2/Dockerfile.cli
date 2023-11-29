@@ -1,0 +1,55 @@
+FROM composer:latest AS composer
+FROM php:8.2-fpm
+
+ARG xdebug_enabled
+
+# Install composer binary from composer:latest
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+
+# Install packages
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    gifsicle \
+    jpegoptim \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    libonig-dev \
+    libzip-dev \
+    optipng \
+    zip \
+    unzip \
+    pgpgpg \
+    pngquant \
+    procps \
+    supervisor \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install \
+    bcmath \
+    exif \
+    gd \
+    mbstring \
+    opcache \
+    pcntl \
+    pdo_mysql \
+    zip
+
+RUN if [ "$xdebug_enabled" = "true" ] ; then pecl install xdebug && docker-php-ext-enable xdebug ; fi
+
+
+
+COPY start-container /usr/local/bin/start-container
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY php.ini /etc/php/8.2/cli/conf.d/99-app.ini
+COPY fpm.conf /usr/local/etc/php-fpm.d/zz-docker.conf
+RUN chmod +x /usr/local/bin/start-container
+
+EXPOSE 9000
