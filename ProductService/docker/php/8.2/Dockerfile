@@ -1,5 +1,5 @@
-FROM composer:latest AS composer
-FROM php:8.2-fpm
+FROM composer:2.6.5 AS composer
+FROM php:8.2.13-fpm
 
 # Arguments defined in docker-compose.yml
 ARG xdebug_enabled
