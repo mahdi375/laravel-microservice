@@ -71,6 +71,32 @@ return [
             'after_commit' => false,
         ],
 
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'hosts' => [
+                [
+                    'host' => env('RABBITMQ_HOST', '127.0.0.1'),
+                    'port' => env('RABBITMQ_PORT', 5672),
+                    'user' => env('RABBITMQ_USER', 'guest'),
+                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
+                    'vhost' => env('RABBITMQ_VHOST', '/'),
+                ],
+                // ...
+            ],
+
+            'options' => [
+                'queue' => [
+                    // ...
+    
+                    'exchange' => 'topic(Mahdi)',
+                    'exchange_type' => 'topic',
+                    // 'exchange_routing_key' => '.product.order.', // specify it in job as queue name
+                ],
+            ],
+            
+            // ...
+        ],
+
     ],
 
     /*
