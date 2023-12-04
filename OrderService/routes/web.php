@@ -1,5 +1,7 @@
 <?php
 
+use App\Jobs\OrderCanceled;
+use App\Jobs\OrderCreated;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,30 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('order', function () {
+
+    $id = 1;
+    $sends = 1;
+
+    while(true) {
+
+        OrderCreated::dispatch("Message: {$id}");
+        OrderCanceled::dispatch("Message: {$id}");
+
+        echo "{$id} \n";
+        
+        $id++;
+
+
+        sleep(2);
+
+        if ($id > $sends) break;
+    }
+
+    return <<<html
+    <h1>Order created </h1>
+    <h2>Message sent to rabbitmq</h2>
+    html;
 });
