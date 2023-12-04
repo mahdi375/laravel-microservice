@@ -20,6 +20,7 @@ services:
       - ./docker/php/${DOCKER_PHP_VERSION}/php.ini:/usr/local/etc/php/conf.d/php.ini
     networks:
       - app_network
+      - rabbitmq_net
     depends_on:
       mysql:
         condition: service_healthy
@@ -48,8 +49,6 @@ services:
       - PGID=${DOCKER_PGID:-1000}
       - TZ=${DOCKER_TZ:-Asia/Tehran}
     restart: unless-stopped
-    ports:
-        - '${DOCKER_MEILISEARCH_PORT:-7700}:7700'
     volumes:
         - 'appmeilisearch:/data.ms'
     networks:
@@ -94,8 +93,6 @@ services:
       - PUID=${DOCKER_PUID:-1000}
       - PGID=${DOCKER_PGID:-1000}
       - TZ=${DOCKER_TZ:-Asia/Tehran}
-    ports:
-      - ${DOCKER_REDIS_PORT:-6379}:6379
     networks:
       - app_network
 
@@ -110,3 +107,6 @@ volumes:
 networks:
   app_network:
     driver: bridge
+  rabbitmq_net:
+    external: true
+      
